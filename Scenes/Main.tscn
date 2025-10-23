@@ -1,7 +1,14 @@
-[gd_scene load_steps=9 format=3 uid="uid://bah2sf6ui50wb"]
+[gd_scene load_steps=16 format=3 uid="uid://bah2sf6ui50wb"]
 
 [ext_resource type="Script" uid="uid://b2snmeohekqld" path="res://Scripts/Player.gd" id="1_r150o"]
 [ext_resource type="Script" uid="uid://dlrb8dwtuhp0a" path="res://Scripts/CameraSpringArm.gd" id="2_idj7w"]
+[ext_resource type="Script" uid="uid://crk6g7m3phn01" path="res://Scripts/Weapon.gd" id="2_kln2b"]
+[ext_resource type="PackedScene" uid="uid://dmwkkyh3sydqe" path="res://Prefabs/bullet.tscn" id="3_rgh2o"]
+[ext_resource type="Script" uid="uid://dy1wivjruw610" path="res://Scripts/Enemy.gd" id="5_pbw6q"]
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_rgh2o"]
+vertices = PackedVector3Array(-5.5, 1, -10.5, 5.25, 1, -15.75, 5.25, 1, -24.5, -24.5, 1, -24.5, -24.5, 1, -9.25, -6, 1, -9.25, 6.25, 1, -15.25, 6.25, 1, -14.25, 8.75, 1, -5.5, 9.5, 1, -5.5, 10, 1, -4.75, 24.5, 1, 6.5, 24.5, 1, -24.5, 13, 1, 6.75, 8, 1, -5, 8, 1, -3.5, -4.25, 1, -8.5, -5.25, 1, -8.5, -5.5, 1, 10.75, 6.25, 1, 14.25, 11, 1, 7, -24.5, 1, 12, -6.5, 1, 12, -6.25, 1, 11, -6, 1, -8.75, 11.5, 1, 7.75, 6.75, 1, 14.5, 12.75, 1, 7.75, 6.75, 1, 15.5, 5.5, 1, 16, 5.5, 1, 24.5, 24.5, 1, 24.5, -6.25, 1, 12.75, -24.5, 1, 24.5)
+polygons = [PackedInt32Array(1, 0, 2), PackedInt32Array(2, 0, 4), PackedInt32Array(2, 4, 3), PackedInt32Array(0, 5, 4), PackedInt32Array(6, 1, 2), PackedInt32Array(9, 8, 7), PackedInt32Array(9, 7, 10), PackedInt32Array(10, 7, 6), PackedInt32Array(6, 2, 10), PackedInt32Array(10, 2, 12), PackedInt32Array(10, 12, 11), PackedInt32Array(11, 13, 10), PackedInt32Array(7, 8, 14), PackedInt32Array(14, 15, 7), PackedInt32Array(7, 15, 16), PackedInt32Array(16, 15, 17), PackedInt32Array(17, 15, 20), PackedInt32Array(17, 20, 19), PackedInt32Array(17, 19, 18), PackedInt32Array(23, 22, 21), PackedInt32Array(4, 5, 24), PackedInt32Array(23, 21, 18), PackedInt32Array(18, 21, 17), PackedInt32Array(17, 21, 24), PackedInt32Array(24, 21, 4), PackedInt32Array(26, 19, 25), PackedInt32Array(25, 19, 20), PackedInt32Array(27, 13, 11), PackedInt32Array(26, 25, 28), PackedInt32Array(28, 25, 27), PackedInt32Array(30, 29, 28), PackedInt32Array(28, 27, 30), PackedInt32Array(30, 27, 11), PackedInt32Array(30, 11, 31), PackedInt32Array(29, 30, 32), PackedInt32Array(32, 30, 21), PackedInt32Array(21, 30, 33), PackedInt32Array(21, 22, 32)]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4xowi"]
 albedo_color = Color(0.57790685, 0.41428903, 0.29615733, 1)
@@ -18,67 +25,89 @@ material = SubResource("StandardMaterial3D_4xowi")
 [sub_resource type="SphereMesh" id="SphereMesh_idj7w"]
 height = 1.21
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_pbw6q"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v1gob"]
+albedo_color = Color(1, 0.44, 0.44, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_v1gob"]
+material = SubResource("StandardMaterial3D_v1gob")
+
 [node name="Node3D" type="Node3D"]
 
 [node name="Map" type="Node3D" parent="."]
 
-[node name="Floor" type="MeshInstance3D" parent="Map"]
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="Map"]
+navigation_mesh = SubResource("NavigationMesh_rgh2o")
+
+[node name="Floor" type="MeshInstance3D" parent="Map/NavigationRegion3D"]
 transform = Transform3D(50, 0, 0, 0, 1, 0, 0, 0, 50, 0, 0, 0)
 mesh = SubResource("BoxMesh_a202f")
+skeleton = NodePath("../..")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Map/Floor"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Map/NavigationRegion3D/Floor"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Map/Floor/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Map/NavigationRegion3D/Floor/StaticBody3D"]
 shape = SubResource("BoxShape3D_noarx")
 
-[node name="Wall" type="MeshInstance3D" parent="Map"]
+[node name="Wall" type="MeshInstance3D" parent="Map/NavigationRegion3D"]
 transform = Transform3D(0.17712902, 0, 11.729741, 0, 2.999242, 0, -0.6008648, 0, 3.4578118, 0.136, 2, 13.424)
 mesh = SubResource("BoxMesh_a202f")
+skeleton = NodePath("../..")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Map/Wall"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Map/NavigationRegion3D/Wall"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Map/Wall/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Map/NavigationRegion3D/Wall/StaticBody3D"]
 transform = Transform3D(1, 0, 0, 0, 0.9999999, 3.6948222e-13, 0, 8.881784e-16, 1.0000006, 0, 0, 0)
 shape = SubResource("BoxShape3D_noarx")
 
-[node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("camera")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32923615, 0)
+[node name="Wall2" type="MeshInstance3D" parent="Map/NavigationRegion3D"]
+transform = Transform3D(-0.28094867, 0, 10.929928, 0, 2.9992423, 0, -0.5598938, 0, -5.48452, 0.136, 2, -12.042)
+mesh = SubResource("BoxMesh_a202f")
+skeleton = NodePath("../../..")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Map/NavigationRegion3D/Wall2"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Map/NavigationRegion3D/Wall2/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 0.9999999, 3.6948222e-13, 0, 8.881784e-16, 1.0000006, 0, 0, 0)
+shape = SubResource("BoxShape3D_noarx")
+
+[node name="Wall3" type="MeshInstance3D" parent="Map/NavigationRegion3D"]
+transform = Transform3D(0.60364604, 0, 3.2680025, 0, 2.9992423, 0, -0.16740589, 0, 11.784034, 10.469, 2, 1.178)
+mesh = SubResource("BoxMesh_a202f")
+skeleton = NodePath("../../..")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Map/NavigationRegion3D/Wall3"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Map/NavigationRegion3D/Wall3/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 0.9999999, 3.6948222e-13, 0, 8.881784e-16, 1.0000006, 0, 0, 0)
+shape = SubResource("BoxShape3D_noarx")
+
+[node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("camera") groups=["Player"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.486282, 1.5, 0)
 script = ExtResource("1_r150o")
 camera = NodePath("../CameraSpring3D/Camera3D")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 mesh = SubResource("CapsuleMesh_a0tk4")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_r3fl7")
 
-[node name="Weapon" type="Node3D" parent="Player"]
+[node name="Weapon" type="Node3D" parent="Player" node_paths=PackedStringArray("root_node", "shoot_position")]
+transform = Transform3D(1, 0, 0, 0, 0.0498371, 0, 0, 0, 0.23320144, 0.017, 0, -0.55)
+script = ExtResource("2_kln2b")
+bullet_prefab = ExtResource("3_rgh2o")
+root_node = NodePath("../..")
+shoot_position = NodePath("ShootPosition")
+shoot_rate = 0.1
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Player/Weapon"]
-transform = Transform3D(0.06405383, 0, 0, 0, -0.052120205, -2.198955e-08, 0, 4.556493e-09, -0.25153112, -0.032532096, 0.7498156, -0.5290871)
+transform = Transform3D(0.07307988, 0, 0, 0, -1.0989457, -1.2553346e-07, 0, 9.607288e-08, -1.435935, -0.032532074, 0.749815, 0.018214226)
 mesh = SubResource("SphereMesh_idj7w")
 
-[node name="Wall" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.28094867, 0, 10.929928, 0, 2.9992423, 0, -0.5598938, 0, -5.48452, 0.136, 2, -12.042)
-mesh = SubResource("BoxMesh_a202f")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="Wall"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Wall/StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 0.9999999, 3.6948222e-13, 0, 8.881784e-16, 1.0000006, 0, 0, 0)
-shape = SubResource("BoxShape3D_noarx")
-
-[node name="Wall2" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.60364604, 0, 3.2680025, 0, 2.9992423, 0, -0.16740589, 0, 11.784034, 10.469, 2, 1.178)
-mesh = SubResource("BoxMesh_a202f")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="Wall2"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Wall2/StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 0.9999999, 3.6948222e-13, 0, 8.881784e-16, 1.0000006, 0, 0, 0)
-shape = SubResource("BoxShape3D_noarx")
+[node name="ShootPosition" type="Node3D" parent="Player/Weapon"]
+transform = Transform3D(0.9999999, 0, 0, 0, 0.99999976, 0, 0, 0, 0.9999999, -0.03272822, 0.7500744, -0.68920827)
 
 [node name="CameraSpring3D" type="SpringArm3D" parent="." node_paths=PackedStringArray("player")]
 transform = Transform3D(-1.0000001, -6.181724e-08, -6.181724e-08, 0, 0.70710677, -0.70710677, 8.7422784e-08, -0.70710677, -0.70710677, -0.5627413, 8.822242, 0)
@@ -91,3 +120,16 @@ transform = Transform3D(-0.9998914, -0.010427862, 0.010427795, -0.010427885, 0.9
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.9848078, 0.12278783, 0.12278783, -0.026466867, -0.59270775, 0.8049827, 0.1716194, -0.7960029, -0.5804534, -0.5627413, 8.822242, 0)
+
+[node name="Enemy" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.74488, 2.8546972, 8.995179)
+script = ExtResource("5_pbw6q")
+move_speed = 5.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy"]
+shape = SubResource("CapsuleShape3D_pbw6q")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Enemy"]
+mesh = SubResource("CapsuleMesh_v1gob")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="Enemy"]
